@@ -1,0 +1,2 @@
+# myjourney
+Dokumentasi Perjalanan
