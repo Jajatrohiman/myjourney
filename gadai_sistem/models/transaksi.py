@@ -12,15 +12,19 @@ class GadaiTransaksi(models.Model):
     durasi_hari = fields.Integer(string='Durasi (Hari)', default=30)
     jatuh_tempo = fields.Date(string='Jatuh Tempo', compute='_compute_jatuh_tempo', store=True)
     barang_ids = fields.One2many('gadai.barang', 'transaksi_id', string='Barang')
-    total_taksiran = fields.Float(string='Total Taksiran', compute='_compute_total_taksiran', store=True)
-    jumlah_pinjaman = fields.Float(string='Jumlah Pinjaman')
-    
+    jumlah_pinjaman = fields.Float(string='Jumlah Pinjaman', required=True)
+    nilai_taksiran = fields.Float(string='Nilai Taksiran')
     bunga_persen = fields.Float(string='Bunga (%) per bulan', default=2.0)
     total_bunga = fields.Float(string='Total Bunga', compute='_compute_total_bunga', store=True)
-    total_pelunasan = fields.Float(string='Total Pelunasan', compute='_compute_total_jumlah_bayar', store=True)
+    total_pelunasan = fields.Float(string='Total Pelunasan Yg Seharusnya', compute='_compute_total_pelunasan', store=True)
+    currency_id = fields.Many2one('res.currency', string='Mata Uang', 
+                                 default=lambda self: self.env.company.currency_id.id)
 
     is_lunas = fields.Boolean(string='Lunas', default=False)
     tanggal_lunas = fields.Date(string='Tanggal Pelunasan')
+    nominal_pelunasan = fields.Float(string='Nominal Pelunasan Aktual', help='Nominal yang dibayarkan saat penebusan barang')
+    selisih_pelunasan = fields.Float(string='Selisih Pelunasan', compute='_compute_selisih_pelunasan', store=True)
+    catatan_pelunasan = fields.Text(string='Catatan Pelunasan')
     
     diperpanjang = fields.Boolean(string='Sudah Diperpanjang?', default=False)
     transaksi_asal_id = fields.Many2one('gadai.transaksi', string='Perpanjangan dari')
@@ -32,45 +36,81 @@ class GadaiTransaksi(models.Model):
         ('dilelang', 'Dilelang')
     ], string='Status', default='aktif', tracking=True)
 
-    @api.depends('barang_ids.nilai_taksiran')
-    def _compute_total_taksiran(self):
-        for record in self:
-            record.total_taksiran = sum(b.nilai_taksiran for b in record.barang_ids)
-
     @api.depends('tanggal', 'durasi_hari')
     def _compute_jatuh_tempo(self):
         for record in self:
             if record.tanggal:
                 record.jatuh_tempo = record.tanggal + timedelta(days=record.durasi_hari)
-
-    @api.depends('total_taksiran', 'bunga_persen')
+            else:
+                record.jatuh_tempo = False
+                
+    @api.depends('jumlah_pinjaman', 'bunga_persen', 'durasi_hari')
     def _compute_total_bunga(self):
         for record in self:
-            record.total_bunga = (record.total_taksiran * record.bunga_persen) / 100
-
+            # Menghitung bunga berdasarkan durasi dalam bulan (dibulatkan ke atas)
+            bulan = (record.durasi_hari or 0) / 30.0
+            if bulan < 1:
+                bulan = 1
+            bunga = (record.jumlah_pinjaman * record.bunga_persen * bulan) / 100
+            record.total_bunga = bunga
+            
     @api.depends('jumlah_pinjaman', 'total_bunga')
-    def _compute_total_jumlah_bayar(self):
-        for record in self:
-            record.total_pelunasan = record.jumlah_pinjaman + record.total_bunga
-
-    @api.depends('total_taksiran', 'total_bunga')
     def _compute_total_pelunasan(self):
         for record in self:
-            record.total_pelunasan = record.total_taksiran + record.total_bunga
+            record.total_pelunasan = record.jumlah_pinjaman + record.total_bunga
+            
+    @api.depends('total_pelunasan', 'nominal_pelunasan')
+    def _compute_selisih_pelunasan(self):
+        for record in self:
+            if record.nominal_pelunasan and record.total_pelunasan:
+                record.selisih_pelunasan = record.nominal_pelunasan - record.total_pelunasan
+            else:
+                record.selisih_pelunasan = 0.0
+            
+    @api.onchange('barang_ids')
+    def _onchange_barang_ids(self):
+        """
+        Method ini hanya untuk menampilkan nilai taksiran total dari barang
+        sebagai informasi untuk user.
+        """
+        for record in self:
+            record.nilai_taksiran = sum(barang.nilai_taksiran for barang in record.barang_ids)
+    
+    @api.onchange('jumlah_pinjaman', 'bunga_persen', 'durasi_hari')
+    def _onchange_pinjaman_fields(self):
+        """
+        Method ini untuk memastikan total bunga dan total pelunasan 
+        langsung terupdate saat ada perubahan di UI
+        """
+        bulan = (self.durasi_hari or 0) / 30.0
+        if bulan < 1:
+            bulan = 1
+        self.total_bunga = (self.jumlah_pinjaman * self.bunga_persen * bulan) / 100
+        self.total_pelunasan = self.jumlah_pinjaman + self.total_bunga
 
     def action_tandai_lunas(self):
-        for record in self:
-            record.write({
-                'is_lunas': True,
-                'tanggal_lunas': fields.Date.today(),
-                'state': 'lunas'
-            })
+        """
+        Membuka wizard untuk proses pelunasan
+        """
+        self.ensure_one()
+        return {
+            'name': 'Pelunasan Gadai',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'active_id': self.id,
+                'default_transaksi_id': self.id,
+            }
+        }
 
     def action_tandai_lelang(self):
         for record in self:
             record.write({'state': 'dilelang'})
 
     def action_perpanjang(self):
+        if not self.barang_ids:
+            raise UserError("Tidak ada barang yang dapat diperpanjang.")
         for record in self:
             if record.diperpanjang:
                 raise UserError("Transaksi ini sudah pernah diperpanjang.")
@@ -79,6 +119,8 @@ class GadaiTransaksi(models.Model):
                 'tanggal': fields.Date.today(),
                 'durasi_hari': record.durasi_hari,
                 'bunga_persen': record.bunga_persen,
+                'jumlah_pinjaman': record.jumlah_pinjaman,
+                'nilai_taksiran': record.nilai_taksiran,
                 'transaksi_asal_id': record.id
             })
             for barang in record.barang_ids:

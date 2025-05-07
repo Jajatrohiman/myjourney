@@ -1,6 +1,6 @@
 <odoo>
     <record id="view_form_transaksi" model="ir.ui.view">
-        <field name="name">gadai.transaksi.form</field>
+        <field name="name">gadai.transaksi</field>
         <field name="model">gadai.transaksi</field>
         <field name="arch" type="xml">
             <form>
@@ -15,13 +15,20 @@
                 </header>
                 <sheet>
                     <group>
-                        <field name="name" readonly="1"/>
-                        <field name="customer_id"/>
-                        <field name="tanggal"/>
-                        <field name="durasi_hari"/>
-                        <field name="jatuh_tempo"/>
-                        <field name="bunga_persen"/>
-                        <field name="jumlah_pinjaman"/>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="customer_id"/>
+                            <field name="tanggal"/>
+                            <field name="durasi_hari"/>
+                            <field name="jatuh_tempo"/>
+                        </group>
+                        <group>
+                            <field name="nilai_taksiran"/>
+                            <field name="jumlah_pinjaman"/>
+                            <field name="bunga_persen"/>
+                            <field name="total_bunga" force_save="1"/>
+                            <field name="total_pelunasan" force_save="1"/>
+                        </group>
                     </group>
                     <notebook>
                         <page string="Barang Gadai">
@@ -34,12 +41,19 @@
                             </field>
                         </page>
                     </notebook>
-                    <group string="Pelunasan">
-                        <field name="total_taksiran" readonly="1"/>
-                        <field name="total_bunga" readonly="1"/>
-                        <field name="total_pelunasan" readonly="1"/>
-                        <field name="is_lunas"/>
-                        <field name="tanggal_lunas"/>
+                    <group string="Informasi Pelunasan">
+                        <group>
+                            <field name="is_lunas"/>
+                            <field name="tanggal_lunas" attrs="{'invisible': [('is_lunas', '=', False)]}"/>
+                            <field name="nominal_pelunasan" attrs="{'readonly': [('state', '=', 'lunas')], 'required': [('is_lunas', '=', True)]}"/>
+                        </group>
+                        <group>
+                            <field name="selisih_pelunasan" attrs="{'invisible': [('is_lunas', '=', False)]}" 
+                                   widget="monetary" options="{'currency_field': 'currency_id'}" 
+                                   decoration-danger="selisih_pelunasan &lt; 0" 
+                                   decoration-info="selisih_pelunasan &gt; 0"/>
+                            <field name="catatan_pelunasan" placeholder="Catatan tentang pelunasan (misal: alasan diskon/potongan)"/>
+                        </group>
                     </group>
                     <group string="Perpanjangan" attrs="{'invisible': [('transaksi_asal_id', '=', False)]}">
                         <field name="transaksi_asal_id"/>
@@ -58,17 +72,11 @@
                 <field name="customer_id"/>
                 <field name="tanggal"/>
                 <field name="jatuh_tempo"/>
+                <field name="jumlah_pinjaman"/>
+                <field name="total_bunga"/>
                 <field name="total_pelunasan"/>
                 <field name="state"/>
             </tree>
         </field>
     </record>
-
-    <menuitem id="menu_transaksi" name="Transaksi" parent="menu_gadai_root"/>
-    <record id="action_transaksi" model="ir.actions.act_window">
-        <field name="name">Transaksi</field>
-        <field name="res_model">gadai.transaksi</field>
-        <field name="view_mode">tree,form</field>
-    </record>
-    <menuitem id="menu_transaksi_action" name="Data Transaksi" parent="menu_transaksi" action="action_transaksi"/>
 </odoo>

@@ -11,4 +11,4 @@
         <field name="name">gadai.transaksi</field>
         <field name="model">gadai.transaksi</field>
     </record>
-</odoo>
+</odoo> 
