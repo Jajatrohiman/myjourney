@@ -1,0 +1,47 @@
+<odoo>
+    <data>
+
+        <!-- Form View -->
+        <record id="view_form_input_data" model="ir.ui.view">
+            <field name="name">input.data.form</field>
+            <field name="model">input.data</field>
+            <field name="arch" type="xml">
+                <form string="Penginputan Data">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                            <field name="date_input"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_tree_input_data" model="ir.ui.view">
+            <field name="name">input.data.tree</field>
+            <field name="model">input.data</field>
+            <field name="arch" type="xml">
+                <tree string="Daftar Input Data">
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="date_input"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_input_data" model="ir.actions.act_window">
+            <field name="name">Input Data</field>
+            <field name="res_model">input.data</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_tree_input_data"/>
+        </record>
+
+        <!-- Menu -->
+        <menuitem id="menu_input_data_root" name="Input Data"/>
+        <menuitem id="menu_input_data" name="Input Data" parent="menu_input_data_root" action="action_input_data"/>
+
+    </data>
+</odoo>

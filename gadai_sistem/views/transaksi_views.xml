@@ -1,0 +1,73 @@
+<odoo>
+    <record id="view_form_transaksi" model="ir.ui.view">
+        <field name="name">gadai.transaksi.form</field>
+        <field name="model">gadai.transaksi</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_tandai_lunas" type="object" string="Tandai Lunas" class="btn-primary"
+                        attrs="{'invisible': [('state', '!=', 'aktif')]}"/>
+                    <button name="action_perpanjang" type="object" string="Perpanjang" class="btn-secondary"
+                        attrs="{'invisible': [('state', '!=', 'aktif')]}"/>
+                    <button name="action_tandai_lelang" type="object" string="Lelang" class="btn-danger"
+                        attrs="{'invisible': [('state', '!=', 'aktif')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="aktif,lunas,diperpanjang,dilelang"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="customer_id"/>
+                        <field name="tanggal"/>
+                        <field name="durasi_hari"/>
+                        <field name="jatuh_tempo"/>
+                        <field name="bunga_persen"/>
+                    </group>
+                    <group string="Pelunasan">
+                        <field name="total_taksiran" readonly="1"/>
+                        <field name="total_bunga" readonly="1"/>
+                        <field name="total_pelunasan" readonly="1"/>
+                        <field name="is_lunas"/>
+                        <field name="tanggal_lunas"/>
+                    </group>
+                    <group string="Perpanjangan" attrs="{'invisible': [('transaksi_asal_id', '=', False)]}">
+                        <field name="transaksi_asal_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Barang Gadai">
+                            <field name="barang_ids">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="jenis"/>
+                                    <field name="nilai_taksiran"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tree_transaksi" model="ir.ui.view">
+        <field name="name">gadai.transaksi.tree</field>
+        <field name="model">gadai.transaksi</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="tanggal"/>
+                <field name="jatuh_tempo"/>
+                <field name="total_pelunasan"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <menuitem id="menu_transaksi" name="Transaksi" parent="menu_gadai_root"/>
+    <record id="action_transaksi" model="ir.actions.act_window">
+        <field name="name">Transaksi</field>
+        <field name="res_model">gadai.transaksi</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_transaksi_action" name="Data Transaksi" parent="menu_transaksi" action="action_transaksi"/>
+</odoo>

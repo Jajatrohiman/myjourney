@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_gadai_customer,gadai.customer,model_gadai_customer,,1,1,1,1
+access_gadai_barang,gadai.barang,model_gadai_barang,,1,1,1,1
+access_gadai_transaksi,gadai.transaksi,model_gadai_transaksi,,1,1,1,1

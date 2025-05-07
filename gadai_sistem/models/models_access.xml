@@ -1,0 +1,14 @@
+<odoo>
+    <record id="model_gadai_customer" model="ir.model">
+        <field name="name">gadai.customer</field>
+        <field name="model">gadai.customer</field>
+    </record>
+    <record id="model_gadai_barang" model="ir.model">
+        <field name="name">gadai.barang</field>
+        <field name="model">gadai.barang</field>
+    </record>
+    <record id="model_gadai_transaksi" model="ir.model">
+        <field name="name">gadai.transaksi</field>
+        <field name="model">gadai.transaksi</field>
+    </record>
+</odoo>
