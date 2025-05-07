@@ -8,9 +8,9 @@
     "data": [
         "security/ir.model.access.csv",
         "models/models_access.xml",
+        "views/transaksi_views.xml",
         "views/customer_views.xml",
-        "views/barang_views.xml",
-        "views/transaksi_views.xml"
+        "views/barang_views.xml"
     ],
     "installable": True,
     "application": True

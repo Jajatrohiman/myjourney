@@ -1,6 +1,6 @@
 <odoo>
     <record id="view_form_transaksi" model="ir.ui.view">
-        <field name="name">gadai.transaksi</field>
+        <field name="name">gadai.transaksi.form</field>
         <field name="model">gadai.transaksi</field>
         <field name="arch" type="xml">
             <form>
@@ -79,4 +79,26 @@
             </tree>
         </field>
     </record>
+
+    <record id="view_tree_transaksi" model="ir.ui.view">
+        <field name="name">gadai.transaksi.tree</field>
+        <field name="model">gadai.transaksi</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="customer_id"/>
+                <field name="jatuh_tempo"/>
+                <field name="jumlah_pinjaman"/>
+            </tree>
+        </field>
+    </record>
+
+    <menuitem id="menu_gadai_root" name="Pegadaian"/>
+    <menuitem id="menu_transaksi" name="Transaksi" parent="menu_gadai_root"/>
+    <record id="action_transaksi" model="ir.actions.act_window">
+        <field name="name">Transaksi</field>
+        <field name="res_model">gadai.transaksi</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_transaksi_action" name="Data Transaksi" parent="menu_transaksi" action="action_transaksi"/>
 </odoo>

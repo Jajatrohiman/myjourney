@@ -88,22 +88,6 @@ class GadaiTransaksi(models.Model):
         self.total_bunga = (self.jumlah_pinjaman * self.bunga_persen * bulan) / 100
         self.total_pelunasan = self.jumlah_pinjaman + self.total_bunga
 
-    def action_tandai_lunas(self):
-        """
-        Membuka wizard untuk proses pelunasan
-        """
-        self.ensure_one()
-        return {
-            'name': 'Pelunasan Gadai',
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'active_id': self.id,
-                'default_transaksi_id': self.id,
-            }
-        }
-
     def action_tandai_lelang(self):
         for record in self:
             record.write({'state': 'dilelang'})
