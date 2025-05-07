@@ -30,11 +30,10 @@
         </field>
     </record>
 
-    <menuitem id="menu_barang" name="Barang" parent="menu_gadai_root"/>
+    <menuitem id="menu_barang" name="Barang" parent="menu_gadai_root" action="action_barang"/>
     <record id="action_barang" model="ir.actions.act_window">
         <field name="name">Barang</field>
         <field name="res_model">gadai.barang</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem id="menu_barang_action" name="Data Barang" parent="menu_barang" action="action_barang"/>
 </odoo>

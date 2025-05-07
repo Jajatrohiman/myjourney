@@ -94,11 +94,10 @@
     </record>
 
     <menuitem id="menu_gadai_root" name="Pegadaian"/>
-    <menuitem id="menu_transaksi" name="Transaksi" parent="menu_gadai_root"/>
+    <menuitem id="menu_transaksi" name="Transaksi" parent="menu_gadai_root" action="action_transaksi"/>
     <record id="action_transaksi" model="ir.actions.act_window">
         <field name="name">Transaksi</field>
         <field name="res_model">gadai.transaksi</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem id="menu_transaksi_action" name="Data Transaksi" parent="menu_transaksi" action="action_transaksi"/>
 </odoo>

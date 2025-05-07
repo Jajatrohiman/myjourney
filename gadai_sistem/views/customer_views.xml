@@ -40,11 +40,10 @@
     </record>
 
     <menuitem id="menu_gadai_root" name="Pegadaian"/>
-    <menuitem id="menu_customer" name="Customer" parent="menu_gadai_root"/>
+    <menuitem id="menu_customer" name="Customer" parent="menu_gadai_root" action="action_customer"/>
     <record id="action_customer" model="ir.actions.act_window">
         <field name="name">Customer</field>
         <field name="res_model">gadai.customer</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem id="menu_customer_action" name="Data Customer" parent="menu_customer" action="action_customer"/>
 </odoo>
