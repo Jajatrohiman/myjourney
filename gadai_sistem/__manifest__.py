@@ -3,7 +3,7 @@
     "version": "1.0",
     "category": "Custom",
     "summary": "Modul Pegadaian - Customer, Barang, dan Transaksi",
-    "author": "Pengguna",
+    "author": "Jajat Rohiman98",
     "depends": ["base"],
     "data": [
         "security/ir.model.access.csv",
