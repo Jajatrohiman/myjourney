@@ -13,10 +13,11 @@ class GadaiTransaksi(models.Model):
     jatuh_tempo = fields.Date(string='Jatuh Tempo', compute='_compute_jatuh_tempo', store=True)
     barang_ids = fields.One2many('gadai.barang', 'transaksi_id', string='Barang')
     total_taksiran = fields.Float(string='Total Taksiran', compute='_compute_total_taksiran', store=True)
-
+    jumlah_pinjaman = fields.Float(string='Jumlah Pinjaman')
+    
     bunga_persen = fields.Float(string='Bunga (%) per bulan', default=2.0)
     total_bunga = fields.Float(string='Total Bunga', compute='_compute_total_bunga', store=True)
-    total_pelunasan = fields.Float(string='Total Pelunasan', compute='_compute_total_pelunasan', store=True)
+    total_pelunasan = fields.Float(string='Total Pelunasan', compute='_compute_total_jumlah_bayar', store=True)
 
     is_lunas = fields.Boolean(string='Lunas', default=False)
     tanggal_lunas = fields.Date(string='Tanggal Pelunasan')
@@ -46,6 +47,11 @@ class GadaiTransaksi(models.Model):
     def _compute_total_bunga(self):
         for record in self:
             record.total_bunga = (record.total_taksiran * record.bunga_persen) / 100
+
+    @api.depends('jumlah_pinjaman', 'total_bunga')
+    def _compute_total_jumlah_bayar(self):
+        for record in self:
+            record.total_pelunasan = record.jumlah_pinjaman + record.total_bunga
 
     @api.depends('total_taksiran', 'total_bunga')
     def _compute_total_pelunasan(self):

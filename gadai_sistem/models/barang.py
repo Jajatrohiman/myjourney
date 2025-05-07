@@ -11,4 +11,5 @@ class GadaiBarang(models.Model):
         ('lainnya', 'Lainnya'),
     ], string='Jenis Barang', required=True)
     nilai_taksiran = fields.Float(string='Nilai Taksiran')
+    spesifikasi = fields.Char(string='Spesifikasi')
     transaksi_id = fields.Many2one('gadai.transaksi', string='Transaksi Gadai')

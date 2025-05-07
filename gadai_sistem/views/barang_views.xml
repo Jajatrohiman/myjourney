@@ -9,6 +9,7 @@
                         <field name="name"/>
                         <field name="jenis"/>
                         <field name="nilai_taksiran"/>
+                        <field name="spesifikasi"/>
                         <field name="transaksi_id"/>
                     </group>
                 </sheet>
@@ -23,6 +24,7 @@
             <tree>
                 <field name="name"/>
                 <field name="jenis"/>
+                <field name="spesifikasi"/>
                 <field name="nilai_taksiran"/>
             </tree>
         </field>

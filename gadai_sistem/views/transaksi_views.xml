@@ -21,16 +21,7 @@
                         <field name="durasi_hari"/>
                         <field name="jatuh_tempo"/>
                         <field name="bunga_persen"/>
-                    </group>
-                    <group string="Pelunasan">
-                        <field name="total_taksiran" readonly="1"/>
-                        <field name="total_bunga" readonly="1"/>
-                        <field name="total_pelunasan" readonly="1"/>
-                        <field name="is_lunas"/>
-                        <field name="tanggal_lunas"/>
-                    </group>
-                    <group string="Perpanjangan" attrs="{'invisible': [('transaksi_asal_id', '=', False)]}">
-                        <field name="transaksi_asal_id"/>
+                        <field name="jumlah_pinjaman"/>
                     </group>
                     <notebook>
                         <page string="Barang Gadai">
@@ -43,6 +34,16 @@
                             </field>
                         </page>
                     </notebook>
+                    <group string="Pelunasan">
+                        <field name="total_taksiran" readonly="1"/>
+                        <field name="total_bunga" readonly="1"/>
+                        <field name="total_pelunasan" readonly="1"/>
+                        <field name="is_lunas"/>
+                        <field name="tanggal_lunas"/>
+                    </group>
+                    <group string="Perpanjangan" attrs="{'invisible': [('transaksi_asal_id', '=', False)]}">
+                        <field name="transaksi_asal_id"/>
+                    </group>
                 </sheet>
             </form>
         </field>
